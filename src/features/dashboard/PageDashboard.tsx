@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 
 import {
   Alert,
@@ -9,23 +9,62 @@ import {
   Button,
   Heading,
   Text,
+  Textarea,
   Wrap,
 } from '@chakra-ui/react';
+import { Formiz, useForm } from '@formiz/core';
 import { Trans, useTranslation } from 'react-i18next';
-import { LuAlertCircle, LuBookOpen, LuGithub } from 'react-icons/lu';
 
-import { Icon } from '@/components/Icons';
+import { FieldTextarea } from '@/components/FieldTextarea';
 import { Page, PageContent } from '@/components/Page';
+import { useGetText } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
+  const [message, setMessage] = useState<string>();
   const { t } = useTranslation(['dashboard']);
+
+  const getTextMutation = useGetText({
+    onSuccess(res) {
+      setMessage(res.response);
+    },
+  });
+
+  const form = useForm({
+    id: 'get-text',
+    onValidSubmit(values) {
+      setMessage(undefined);
+      getTextMutation.mutate({
+        context: values.emailContext,
+        subject: values.subjectContext,
+      });
+    },
+    initialValues: {
+      emailContext: `Bonjour Renan,
+
+Comment allez-vous?
+
+Je me permets de vous relancer car votre profil m'intéresse beaucoup.
+J'aurai aimé échanger avec vous au sujet de votre parcours et sur ce qu'il nous serait possible de vous proposer.
+Si cela vous intéresse, faites moi signe !
+
+Belle journée !
+Julie`,
+      subjectContext: `Codeur en seine est une journée par la communauté pour la communauté;
+c'est une journée de conférences gratuite qui se déroule à Rouen, pour découvrir, apprendre et partager autour du monde du développement.
+'Codeurs en Seine vous propose une journée complète le jeudi 26 octobre sur des conférences aux thèmes divers et variés : Web, Devops, UX, Securité, Langages etc.
+Codeurs en Seine est à la recherche de sponsors pour proposer un événement d'une qualité toujours meilleure.
+
+Les partenaires des éditions précédentes ont confirmé la visibilité offerte par ce sponsoring, surtout dans le cadre d'une politique de recrutement.`,
+    },
+  });
+
   return (
     <Page>
       <PageContent>
         <Heading size="md" mb="4">
           {t('dashboard:title')}
         </Heading>
-        <Alert status="success" colorScheme="brand" borderRadius="md">
+        <Alert mb="12" status="success" colorScheme="brand" borderRadius="md">
           <AlertIcon />
           <Box flex="1">
             <AlertTitle fontSize="lg">
@@ -40,27 +79,28 @@ export default function PageDashboard() {
             </AlertDescription>
           </Box>
         </Alert>
-        <Wrap mt="4" spacing="4">
-          <Button
-            variant="link"
-            as="a"
-            href="https://github.com/BearStudio/start-ui-web"
-          >
-            <Icon icon={LuGithub} me="1" /> {t('dashboard:links.github')}
-          </Button>
-          <Button variant="link" as="a" href="https://docs.web.start-ui.com">
-            <Icon icon={LuBookOpen} me="1" />{' '}
-            {t('dashboard:links.documentation')}
-          </Button>
-          <Button
-            variant="link"
-            as="a"
-            href="https://github.com/BearStudio/start-ui/issues/new"
-          >
-            <Icon icon={LuAlertCircle} me="1" />{' '}
-            {t('dashboard:links.openIssue')}
-          </Button>
-        </Wrap>
+
+        <Formiz connect={form} autoForm>
+          <FieldTextarea
+            label="Email context"
+            name="emailContext"
+            required="Email context is required"
+            mb="4"
+          />
+          <FieldTextarea
+            label="Subject context"
+            name="subjectContext"
+            required="Subject context is required"
+          />
+
+          <Wrap mt="4" mb="12" spacing="4">
+            <Button type="submit" isLoading={getTextMutation.isLoading}>
+              Generate
+            </Button>
+          </Wrap>
+        </Formiz>
+
+        {message && <Textarea readOnly value={message} />}
       </PageContent>
     </Page>
   );

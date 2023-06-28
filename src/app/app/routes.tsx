@@ -99,6 +99,10 @@ export const routes = [
           },
         ],
       },
+      {
+        path: '',
+        element: <PageDashboard />,
+      },
 
       /**
        * Authenticated Routes
