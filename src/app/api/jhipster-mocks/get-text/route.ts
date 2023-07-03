@@ -1,12 +1,11 @@
-import { param } from 'cypress/types/jquery';
 import { NextResponse } from 'next/server';
-import { Configuration, OpenAIApi } from 'openai';
-import { z } from 'zod';
+import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai';
 
 import {
   apiMethod,
-  notSignedInResponse,
+  badRequestResponse,
 } from '@/app/api/jhipster-mocks/_helpers/api';
+import { rules } from '@/app/api/jhipster-mocks/get-text/rules';
 import { zGetTextOptions } from '@/features/dashboard/schema';
 
 const configuration = new Configuration({
@@ -15,52 +14,47 @@ const configuration = new Configuration({
 const openai = new OpenAIApi(configuration);
 
 export const POST = apiMethod({
-  handler: async ({ req, user }) => {
-    if (!user?.id) {
-      return notSignedInResponse();
+  public: true,
+  handler: async ({ req }) => {
+    const bodyParsed = zGetTextOptions().safeParse(await req.json());
+
+    if (!bodyParsed.success) {
+      return badRequestResponse({ details: bodyParsed.error });
     }
 
-    const params = zGetTextOptions().parse(await req.json());
-    console.log({ params });
+    const { data } = bodyParsed;
+
+    const messages: Array<ChatCompletionRequestMessage> = [
+      {
+        role: 'user',
+        content: `Je vais t'envoyer, dans cet ordre: un message promotionel, de recrutement, marketing que j'ai reçu, et un sujet pour lequel j'ai un intérêt particulier que je veux vendre.`,
+      },
+      {
+        role: 'user',
+        content: data.context,
+      },
+      {
+        role: 'user',
+        content: data.subject.description,
+      },
+      {
+        role: 'user',
+        content: `Rédige un mail de réponse (en reprenant l'email reçu), en vantant les mérites du sujet. La réponse doit respecter les règles suivantes: ${rules(
+          data.subject,
+          data.voice
+        )}`,
+      },
+    ];
+
+    console.log(messages);
 
     const result = await openai.createChatCompletion({
       model: 'gpt-3.5-turbo',
-      messages: [
-        {
-          role: 'user',
-          content: `Je vais t'envoyer, dans cet ordre: un email que j'ai reçu, et un sujet que je veux vanter`,
-        },
-        {
-          role: 'user',
-          content: params.context,
-        },
-        {
-          role: 'user',
-          content: params.subject,
-        },
-        {
-          role: 'user',
-          content: `Rédige un mail de réponse (en reprenant l'email reçu), en vantant les mérites du sujet`,
-        },
-      ],
+      messages,
     });
-
-    // const bodyParsed = z
-    //   .object({
-    //     email: z.string().email(),
-    //     firstName: z.string().nullable(),
-    //     lastName: z.string().nullable(),
-    //     langKey: z.string(),
-    //   })
-    //   .safeParse(await req.json());
-
-    // if (!bodyParsed.success) {
-    //   return badRequestResponse({ details: bodyParsed.error });
-    // }
 
     return NextResponse.json({
       response: result.data.choices[0]?.message?.content,
     });
-    // return NextResponse.json({ ok: 'ok' });
   },
 });

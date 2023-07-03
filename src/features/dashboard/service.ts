@@ -1,6 +1,5 @@
 import { createMutationKeys } from '@lukemorales/query-key-factory';
 import { UseMutationOptions, useMutation } from '@tanstack/react-query';
-import axios from 'axios';
 
 import { GetText, GetTextOptions, zGetText } from '@/features/dashboard/schema';
 
@@ -16,8 +15,11 @@ export const useGetText = (
   const getTextMutation = useMutation({
     mutationKey: getTextMutationKeys.getText.mutationKey,
     mutationFn: async (params: GetTextOptions) => {
-      const response = await axios.post(GET_TEXT_BASE_URL, params);
-      return zGetText().parse(response.data);
+      const response = await fetch(`/api/jhipster-mocks${GET_TEXT_BASE_URL}`, {
+        method: 'POST',
+        body: JSON.stringify(params),
+      }).then((response) => response.json());
+      return zGetText().parse(response);
     },
     ...options,
   });

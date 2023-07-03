@@ -1,30 +1,32 @@
 import React, { useState } from 'react';
 
 import {
-  Alert,
-  AlertDescription,
-  AlertIcon,
-  AlertTitle,
-  Box,
   Button,
   Heading,
-  Text,
+  SimpleGrid,
   Textarea,
-  Wrap,
+  useClipboard,
 } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
-import { Trans, useTranslation } from 'react-i18next';
+import { capitalize } from 'lodash';
+import { useTranslation } from 'react-i18next';
 
+import { FieldSelect } from '@/components/FieldSelect';
 import { FieldTextarea } from '@/components/FieldTextarea';
 import { Page, PageContent } from '@/components/Page';
+import { subjects } from '@/features/dashboard/data';
+import { voice } from '@/features/dashboard/schema';
 import { useGetText } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
   const [message, setMessage] = useState<string>();
   const { t } = useTranslation(['dashboard']);
+  const clipboard = useClipboard('');
 
   const getTextMutation = useGetText({
     onSuccess(res) {
+      // TODO: ajout toast texte copié avec succès
+      clipboard.setValue(res.response);
       setMessage(res.response);
     },
   });
@@ -32,10 +34,13 @@ export default function PageDashboard() {
   const form = useForm({
     id: 'get-text',
     onValidSubmit(values) {
-      setMessage(undefined);
+      setMessage('');
       getTextMutation.mutate({
         context: values.emailContext,
-        subject: values.subjectContext,
+        subject:
+          subjects.find((subject) => subject.label === values.subjectContext) ??
+          subjects[0],
+        voice: values.voice,
       });
     },
     initialValues: {
@@ -48,13 +53,9 @@ J'aurai aimé échanger avec vous au sujet de votre parcours et sur ce qu'il nou
 Si cela vous intéresse, faites moi signe !
 
 Belle journée !
-Julie`,
-      subjectContext: `Codeur en seine est une journée par la communauté pour la communauté;
-c'est une journée de conférences gratuite qui se déroule à Rouen, pour découvrir, apprendre et partager autour du monde du développement.
-'Codeurs en Seine vous propose une journée complète le jeudi 26 octobre sur des conférences aux thèmes divers et variés : Web, Devops, UX, Securité, Langages etc.
-Codeurs en Seine est à la recherche de sponsors pour proposer un événement d'une qualité toujours meilleure.
-
-Les partenaires des éditions précédentes ont confirmé la visibilité offerte par ce sponsoring, surtout dans le cadre d'une politique de recrutement.`,
+Astrid`,
+      subjectContext: subjects[0]?.label,
+      voice: voice[0],
     },
   });
 
@@ -64,43 +65,55 @@ Les partenaires des éditions précédentes ont confirmé la visibilité offerte
         <Heading size="md" mb="4">
           {t('dashboard:title')}
         </Heading>
-        <Alert mb="12" status="success" colorScheme="brand" borderRadius="md">
-          <AlertIcon />
-          <Box flex="1">
-            <AlertTitle fontSize="lg">
-              {t('dashboard:welcome.title')}
-            </AlertTitle>
-            <AlertDescription display="block">
-              {t('dashboard:welcome.description')}
-              <br />
-              <Text as="a" href="https://www.bearstudio.fr">
-                <Trans t={t} i18nKey="dashboard:welcome.author" />
-              </Text>
-            </AlertDescription>
-          </Box>
-        </Alert>
 
-        <Formiz connect={form} autoForm>
-          <FieldTextarea
-            label="Email context"
-            name="emailContext"
-            required="Email context is required"
-            mb="4"
-          />
-          <FieldTextarea
-            label="Subject context"
-            name="subjectContext"
-            required="Subject context is required"
-          />
+        <SimpleGrid columns={2} gap={4}>
+          <Formiz connect={form} autoForm>
+            <FieldTextarea
+              textareaProps={{ minH: '52' }}
+              label="Email context"
+              name="emailContext"
+              required="Email context is required"
+              mb="4"
+            />
 
-          <Wrap mt="4" mb="12" spacing="4">
-            <Button type="submit" isLoading={getTextMutation.isLoading}>
-              Generate
+            <FieldSelect
+              mb="4"
+              label="Subject context"
+              name="subjectContext"
+              required="Subject context is required"
+              options={subjects.map((subject) => ({
+                label: subject.label,
+                value: subject.label,
+              }))}
+            />
+
+            <FieldSelect
+              mb="4"
+              label="Ton à employer pour la réponse"
+              name="voice"
+              options={voice.map((voiceId) => ({
+                label: capitalize(voiceId),
+                value: voiceId,
+              }))}
+            />
+
+            <Button
+              w="full"
+              type="submit"
+              isLoading={getTextMutation.isLoading}
+            >
+              Générer une réponse
             </Button>
-          </Wrap>
-        </Formiz>
+          </Formiz>
 
-        {message && <Textarea readOnly value={message} />}
+          <Textarea
+            mt={8}
+            readOnly
+            value={message}
+            minHeight="72"
+            placeholder="Le message généré apparaîtra ici"
+          />
+        </SimpleGrid>
       </PageContent>
     </Page>
   );
