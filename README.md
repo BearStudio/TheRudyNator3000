@@ -16,27 +16,32 @@ A live read-only demonstration of what you will have when starting a project wit
 ## Getting Started
 
 ```bash
-yarn create start-ui --web myApp
-```
-
-That will scaffold a new folder with the latest version of 🚀 Start UI <small>[web]</small> 🎉
-
-Then just go to the created folder:
-
-```bash
-cd myApp
-```
-
-```bash
 # Duplicate the .env.example file to a new .env file (update variables)
 cp .env.example .env
+```
 
-# Init the local mocks database and seed users
-yarn db:push && yarn db:seed
+### OpenAPI key
 
-# Run the development server
+- First, create an account on https://platform.openai.com/signup if this is not already the case
+- Secondly, you will need an api key to be able to chat with ChatGPT. You can create a new one here: https://platform.openai.com/account/api-keys
+- Copy your key in your `.env` file you created before in the `OPENAI_API_KEY` env var
+- It is strongly encouraged to setup Usage Limits to manage undesirable spending: https://platform.openai.com/account/billing/limits
+
+### Rebrandly key (optional)
+
+Rebrandly is used to manage clicks tracker in links used in your subjects.
+
+- First, create an account on https://oauth.rebrandly.com/signup
+- Secondly, create a new API key: https://app.rebrandly.com/account/api
+- Copy the key in your `.env` file, in the `REBRANDLY_KEY` env var
+- 
+
+### Start the app
+
+```bash
 yarn dev
 ```
+
 
 ## Technology
 

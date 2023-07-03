@@ -24,6 +24,7 @@ const envSchema = z.object({
   NEXT_PUBLIC_DEV_ENV_COLOR_SCHEME: z.string().optional(),
 
   OPENAI_API_KEY: z.string().nonempty(),
+  REBRANDLY_KEY: z.string().nonempty(),
 });
 
 /**

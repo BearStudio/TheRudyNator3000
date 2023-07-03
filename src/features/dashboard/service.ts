@@ -1,12 +1,27 @@
-import { createMutationKeys } from '@lukemorales/query-key-factory';
-import { UseMutationOptions, useMutation } from '@tanstack/react-query';
+import {
+  createMutationKeys,
+  createQueryKeys,
+} from '@lukemorales/query-key-factory';
+import {
+  UseMutationOptions,
+  useMutation,
+  useQuery,
+} from '@tanstack/react-query';
+import axios from 'axios';
+import { ofetch } from 'ofetch';
 
 import { GetText, GetTextOptions, zGetText } from '@/features/dashboard/schema';
 
 const GET_TEXT_BASE_URL = '/get-text';
+const GET_LINKS_CLICK_BASE_URL = '/clicks';
 
 const getTextMutationKeys = createMutationKeys('getTextService', {
   getText: null,
+  getLinksClicks: null,
+});
+
+const getLinksClickService = createQueryKeys('getLinksClickService', {
+  getLinksClicks: null,
 });
 
 export const useGetText = (
@@ -14,11 +29,12 @@ export const useGetText = (
 ) => {
   const getTextMutation = useMutation({
     mutationKey: getTextMutationKeys.getText.mutationKey,
-    mutationFn: async (params: GetTextOptions) => {
-      const response = await fetch(`/api/jhipster-mocks${GET_TEXT_BASE_URL}`, {
+    mutationFn: async (body: GetTextOptions) => {
+      const response = await ofetch(`/api/jhipster-mocks${GET_TEXT_BASE_URL}`, {
         method: 'POST',
-        body: JSON.stringify(params),
-      }).then((response) => response.json());
+        body,
+      });
+
       return zGetText().parse(response);
     },
     ...options,
@@ -30,4 +46,19 @@ export const useGetText = (
     response,
     ...getTextMutation,
   };
+};
+
+export const useGetLinksClicks = () => {
+  return useQuery({
+    queryKey: getLinksClickService.getLinksClicks.queryKey,
+    queryFn: async () => {
+      return await ofetch(`/api/jhipster-mocks${GET_LINKS_CLICK_BASE_URL}`, {
+        method: 'GET',
+        params: {
+          linkId: 'ea3a39a2bebe4add98f6b97a307a4844',
+        },
+        retry: 0,
+      });
+    },
+  });
 };

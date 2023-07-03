@@ -4,6 +4,9 @@ import {
   Button,
   Heading,
   SimpleGrid,
+  SkeletonText,
+  Spinner,
+  Text,
   Textarea,
   useClipboard,
 } from '@chakra-ui/react';
@@ -14,9 +17,9 @@ import { useTranslation } from 'react-i18next';
 import { FieldSelect } from '@/components/FieldSelect';
 import { FieldTextarea } from '@/components/FieldTextarea';
 import { Page, PageContent } from '@/components/Page';
-import { subjects } from '@/features/dashboard/data';
+import { Subject, subjects } from '@/features/dashboard/data';
 import { voice } from '@/features/dashboard/schema';
-import { useGetText } from '@/features/dashboard/service';
+import { useGetLinksClicks, useGetText } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
   const [message, setMessage] = useState<string>();
@@ -31,15 +34,17 @@ export default function PageDashboard() {
     },
   });
 
+  const getLinksClickQuery = useGetLinksClicks();
+
   const form = useForm({
     id: 'get-text',
     onValidSubmit(values) {
       setMessage('');
       getTextMutation.mutate({
         context: values.emailContext,
-        subject:
-          subjects.find((subject) => subject.label === values.subjectContext) ??
-          subjects[0],
+        subject: subjects?.find(
+          (subject) => subject.label === values.subjectContext
+        ) as Subject,
         voice: values.voice,
       });
     },
@@ -65,6 +70,20 @@ Astrid`,
         <Heading size="md" mb="4">
           {t('dashboard:title')}
         </Heading>
+
+        {getLinksClickQuery.isLoading && (
+          <SkeletonText mb="4" noOfLines={1}>
+            Nombre de spammeurs ayant cliqué les liens inclus:{' '}
+          </SkeletonText>
+        )}
+
+        {!getLinksClickQuery.isLoading && (
+          <Text mb="4">
+            Nombre de spammeurs ayant cliqué les liens inclus:{' '}
+            {getLinksClickQuery.data}
+            {getLinksClickQuery.isFetching && <Spinner ml="4" size="xs" />}
+          </Text>
+        )}
 
         <SimpleGrid columns={2} gap={4}>
           <Formiz connect={form} autoForm>

@@ -55,6 +55,7 @@
     "lodash": "4.17.21",
     "next": "13.4.7",
     "next-swagger-doc": "0.4.0",
+    "ofetch": "1.1.1",
     "openai": "3.3.0",
     "react": "18.2.0",
     "react-currency-input-field": "3.6.10",

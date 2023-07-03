@@ -9,7 +9,7 @@ export const zSubject = () =>
     keyword: z.string().nonempty(),
   });
 
-export const subjects: Subject[] = [
+export const subjects: readonly Subject[] = [
   {
     label: 'Start UI',
     keyword: 'start ui',
@@ -52,4 +52,4 @@ De l’idée jusqu’au déploiement, l'équipe du bearstudio peut réaliser les
 `,
     link: 'https://rebrand.ly/bearstudio',
   },
-];
+] as const;
