@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
   Button,
@@ -13,6 +13,7 @@ import {
 import { Formiz, useForm } from '@formiz/core';
 import { capitalize } from 'lodash';
 import { useTranslation } from 'react-i18next';
+import useSound from 'use-sound';
 
 import { FieldSelect } from '@/components/FieldSelect';
 import { FieldTextarea } from '@/components/FieldTextarea';
@@ -25,6 +26,8 @@ export default function PageDashboard() {
   const [message, setMessage] = useState<string>();
   const { t } = useTranslation(['dashboard']);
   const clipboard = useClipboard('');
+  const [playWaitingMusic, { stop: stopWaitingMusic }] = useSound('/wait.mp3');
+  const [playDingSFX] = useSound('/ding.mp3');
 
   const getTextMutation = useGetText({
     onSuccess(res) {
@@ -39,14 +42,20 @@ export default function PageDashboard() {
   const form = useForm({
     id: 'get-text',
     onValidSubmit(values) {
+      playWaitingMusic();
       setMessage('');
-      getTextMutation.mutate({
-        context: values.emailContext,
-        subject: subjects?.find(
-          (subject) => subject.label === values.subjectContext
-        ) as Subject,
-        voice: values.voice,
-      });
+      getTextMutation
+        .mutateAsync({
+          context: values.emailContext,
+          subject: subjects?.find(
+            (subject) => subject.label === values.subjectContext
+          ) as Subject,
+          voice: values.voice,
+        })
+        .then(() => {
+          stopWaitingMusic();
+          playDingSFX();
+        });
     },
     initialValues: {
       emailContext: `Bonjour Renan,

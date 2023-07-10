@@ -5,4 +5,4 @@ export const config: ThemeConfig = {
   useSystemColorMode: false,
 };
 
-export const COLOR_MODE_STORAGE_KEY = 'start-ui-color-mode';
+export const COLOR_MODE_STORAGE_KEY = 'the-rudy-nator-3000';

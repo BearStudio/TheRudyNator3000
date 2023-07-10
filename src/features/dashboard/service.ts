@@ -7,7 +7,6 @@ import {
   useMutation,
   useQuery,
 } from '@tanstack/react-query';
-import axios from 'axios';
 import { ofetch } from 'ofetch';
 
 import { GetText, GetTextOptions, zGetText } from '@/features/dashboard/schema';
