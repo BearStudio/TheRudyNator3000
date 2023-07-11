@@ -23,7 +23,7 @@ import { voice } from '@/features/dashboard/schema';
 import { useGetLinksClicks, useGetText } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
-  const [message, setMessage] = useState<string>();
+  const [message, setResponse] = useState<string>();
   const { t } = useTranslation(['dashboard']);
   const clipboard = useClipboard('');
   const [playWaitingMusic, { stop: stopWaitingMusic }] = useSound('/wait.mp3');
@@ -33,7 +33,7 @@ export default function PageDashboard() {
     onSuccess(res) {
       // TODO: ajout toast texte copié avec succès
       clipboard.setValue(res.response);
-      setMessage(res.response);
+      setResponse(res.response);
     },
   });
 
@@ -43,7 +43,9 @@ export default function PageDashboard() {
     id: 'get-text',
     onValidSubmit(values) {
       playWaitingMusic();
-      setMessage('');
+
+      setResponse('');
+
       getTextMutation
         .mutateAsync({
           context: values.emailContext,
@@ -94,21 +96,21 @@ Astrid`,
           </Text>
         )}
 
-        <SimpleGrid columns={2} gap={4}>
+        <SimpleGrid columns={1}>
           <Formiz connect={form} autoForm>
             <FieldTextarea
               textareaProps={{ minH: '52' }}
-              label="Email context"
+              label="Contenu du spammeur"
               name="emailContext"
-              required="Email context is required"
+              required="Le contenu du spammeur est requis"
               mb="4"
             />
 
             <FieldSelect
               mb="4"
-              label="Subject context"
+              label="Sujet à promouvoir"
               name="subjectContext"
-              required="Subject context is required"
+              required="Le sujet à promouvoir est requis"
               options={subjects.map((subject) => ({
                 label: subject.label,
                 value: subject.label,

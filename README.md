@@ -1,6 +1,11 @@
-## Documentation
+<h1 align="center"><img style="object-fit: contain; max-height: 600px;" src="assets/thumbnail.png" alt="Start UI Web" /></h1>
 
-For detailed information on how to use this project, please refer to the [documentation](https://docs.web.start-ui.com). The documentation contains all the necessary information on installation, usage, and some guides.
+TheRudyNator3000™ is an AI powered app that will allow you to generate responses that promotes a subject you love to spammers (because why not ?)
+
+
+## Starter Documentation
+
+This project was initiated using StartUI [web] starter. If you need more details, please see the [documentation](https://docs.web.start-ui.com). It contains all the necessary information on installation, usage, and some guides.
 
 ## Getting Started
 
@@ -9,16 +14,15 @@ For detailed information on how to use this project, please refer to the [docume
 cp .env.example .env
 ```
 
-### OpenAPI key
+### Adding the OpenAPI key (needed for ChatGPT)
 
 - First, create an account on https://platform.openai.com/signup if this is not already the case
 - Secondly, you will need an api key to be able to chat with ChatGPT. You can create a new one here: https://platform.openai.com/account/api-keys
 - Copy your key in your `.env` file you created before in the `OPENAI_API_KEY` env var
 - It is strongly encouraged to setup Usage Limits to manage undesirable spending: https://platform.openai.com/account/billing/limits
 
-### Rebrandly key (optional)
+### Rebrandly key (needed to track links clicks) 
 
-Rebrandly is used to manage clicks tracker in links used in your subjects.
 
 - First, create an account on https://oauth.rebrandly.com/signup
 - Secondly, create a new API key: https://app.rebrandly.com/account/api
@@ -47,7 +51,7 @@ yarn build
 yarn start
 ```
 
-### Outils utisés
+### Used tools to do this project
 
-- dotenv.dotenv-vscode pour cacher vos variables d'environnement
-- PAs utilisé, mais vous pouvez vous en inspirer: https://github.com/othneildrew/Best-README-Template (je suis passé par le template fournit par startui)
+- dotenv.dotenv-vscode to hide env vars (usefull for meetups and streams)
+- Not used here, but if you need inspiration for a README see: https://github.com/othneildrew/Best-README-Template
