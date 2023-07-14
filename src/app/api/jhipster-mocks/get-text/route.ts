@@ -25,6 +25,10 @@ export const POST = apiMethod({
     const { data } = bodyParsed;
 
     const messages: Array<ChatCompletionRequestMessage> = [
+      // {
+      //   role: 'user',
+      //   content: `En te basant sur ce contexte que j'ai reçu par mail d'un inconnu, fait moi une réponse en français qui fait la promotion de codeurs en seine en incitant cette entreprise à sponsoriser l'évènement codeurs en seine. Voici le contexte du mail de l'inconnu: ''. Voici quelques infos sur codeurs en seine`,
+      // },
       {
         role: 'user',
         content: `Je vais t'envoyer, dans cet ordre: un message promotionel, de recrutement, marketing que j'ai reçu, et un sujet pour lequel j'ai un intérêt particulier que je veux vendre.`,

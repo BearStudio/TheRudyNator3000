@@ -65,24 +65,16 @@ export default function PageDashboard() {
         });
     },
     initialValues: {
-      emailContext: `Bonjour Renan,
-
-Comment allez-vous?
-
-Je me permets de vous relancer car votre profil m'intéresse beaucoup.
-J'aurai aimé échanger avec vous au sujet de votre parcours et sur ce qu'il nous serait possible de vous proposer.
-Si cela vous intéresse, faites moi signe !
-
-Belle journée !
-Astrid`,
+      emailContext: ``,
       subjectContext: subjects[0]?.label,
+      subjectDescription: subjects[0]?.description,
       voice: voice[0],
     },
   });
 
   return (
     <Page>
-      <Flex bg="blue.100" shadow="md">
+      <Flex bg="white" shadow="md">
         <PageContainer>
           <Flex my="4" alignItems="center">
             <Image
@@ -141,10 +133,25 @@ Astrid`,
                 label="Sujet à promouvoir"
                 name="subjectContext"
                 required="Le sujet à promouvoir est requis"
+                onValueChange={(newValue) => {
+                  form.setValues({
+                    subjectDescription: subjects.find(
+                      (subject) => subject.label === newValue
+                    )?.description,
+                  });
+                }}
                 options={subjects.map((subject) => ({
                   label: subject.label,
                   value: subject.label,
                 }))}
+              />
+
+              <FieldTextarea
+                textareaProps={{ minH: '52' }}
+                label="Règles"
+                name="subjectDescription"
+                required="LEs règlers sont requises"
+                mb="4"
               />
 
               <FieldSelect
