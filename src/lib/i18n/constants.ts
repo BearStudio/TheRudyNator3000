@@ -8,7 +8,7 @@ export type Language = {
 
 export const DEFAULT_NAMESPACE = 'common';
 
-export const DEFAULT_LANGUAGE_KEY: Language['key'] = 'en';
+export const DEFAULT_LANGUAGE_KEY: Language['key'] = 'fr';
 
 export const AVAILABLE_LANGUAGES: Language[] = [
   {

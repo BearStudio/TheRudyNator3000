@@ -23,16 +23,6 @@ export const Document = ({ children }: { children: ReactNode }) => {
       }
     >
       <head>
-        <title>Start UI</title>
-        <meta
-          name="viewport"
-          content="width=device-width,initial-scale=1,viewport-fit=cover"
-        />
-        <meta
-          name="apple-mobile-web-app-status-bar-style"
-          content="black-translucent"
-        />
-        <meta name="apple-mobile-web-app-capable" content="yes"></meta>
         <link
           rel="apple-touch-icon"
           sizes="180x180"
@@ -51,16 +41,21 @@ export const Document = ({ children }: { children: ReactNode }) => {
           href="/favicon-16x16.png"
         />
         <link rel="manifest" href="/site.webmanifest" />
-        <link
-          rel="mask-icon"
-          href="/safari-pinned-tab.svg"
-          color={theme.colors.gray?.['800']}
+        <link rel="mask-icon" href="/safari-pinned-tab.svg" color="#5bbad5" />
+        <meta name="apple-mobile-web-app-title" content="TheRudyNator3000" />
+        <meta name="application-name" content="TheRudyNator3000" />
+        <meta name="msapplication-TileColor" content="#da532c" />
+        <meta name="theme-color" content="#ffffff"></meta>
+        <title>TheRudyNator3000</title>
+        <meta
+          name="viewport"
+          content="width=device-width,initial-scale=1,viewport-fit=cover"
         />
         <meta
-          name="msapplication-TileColor"
-          content={theme.colors.gray?.['800']}
+          name="apple-mobile-web-app-status-bar-style"
+          content="black-translucent"
         />
-        <meta name="theme-color" content={theme.colors.gray?.['800']} />
+        <meta name="apple-mobile-web-app-capable" content="yes"></meta>
       </head>
       <body>
         {/* https://github.com/chakra-ui/chakra-ui/issues/7040 */}

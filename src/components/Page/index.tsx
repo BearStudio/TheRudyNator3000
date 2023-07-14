@@ -40,7 +40,7 @@ const containerSizes = {
   full: '100%',
 } as const;
 
-const PageContainer = ({ children, ...rest }: FlexProps) => {
+export const PageContainer = ({ children, ...rest }: FlexProps) => {
   const { hideContainer, containerSize } = usePageContext();
 
   if (hideContainer) return <>{children}</>;

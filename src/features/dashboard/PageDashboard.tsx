@@ -1,30 +1,35 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 
 import {
   Button,
+  Flex,
   Heading,
+  Image,
   SimpleGrid,
   SkeletonText,
   Spinner,
+  Stack,
   Text,
   Textarea,
+  Tooltip,
   useClipboard,
 } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
+import { motion } from 'framer-motion';
 import { capitalize } from 'lodash';
-import { useTranslation } from 'react-i18next';
+import { FiAlertTriangle } from 'react-icons/fi';
 import useSound from 'use-sound';
 
 import { FieldSelect } from '@/components/FieldSelect';
 import { FieldTextarea } from '@/components/FieldTextarea';
-import { Page, PageContent } from '@/components/Page';
+import { Icon } from '@/components/Icons';
+import { Page, PageContainer, PageContent } from '@/components/Page';
 import { Subject, subjects } from '@/features/dashboard/data';
 import { voice } from '@/features/dashboard/schema';
 import { useGetLinksClicks, useGetText } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
   const [message, setResponse] = useState<string>();
-  const { t } = useTranslation(['dashboard']);
   const clipboard = useClipboard('');
   const [playWaitingMusic, { stop: stopWaitingMusic }] = useSound('/wait.mp3');
   const [playDingSFX] = useSound('/ding.mp3');
@@ -77,11 +82,25 @@ Astrid`,
 
   return (
     <Page>
+      <Flex bg="blue.100" shadow="md">
+        <PageContainer>
+          <Flex my="4" alignItems="center">
+            <Image
+              src="/thumbnail.png"
+              maxH="12"
+              objectFit="contain"
+              alt="TheRudyNator3000, image d'illustration. C'est un homme en colère qui tient une lettre."
+            />
+            <Stack ml="4" spacing="1">
+              <Heading size="md">TheRudyNator3000</Heading>
+              <Text fontSize="sm" color="blackAlpha.700">
+                Une IA pour les gouverner toutes
+              </Text>
+            </Stack>
+          </Flex>
+        </PageContainer>
+      </Flex>
       <PageContent>
-        <Heading size="md" mb="4">
-          {t('dashboard:title')}
-        </Heading>
-
         {getLinksClickQuery.isLoading && (
           <SkeletonText mb="4" noOfLines={1}>
             Nombre de spammeurs ayant cliqué les liens inclus:{' '}
@@ -91,50 +110,62 @@ Astrid`,
         {!getLinksClickQuery.isLoading && (
           <Text mb="4">
             Nombre de spammeurs ayant cliqué les liens inclus:{' '}
-            {getLinksClickQuery.data}
-            {getLinksClickQuery.isFetching && <Spinner ml="4" size="xs" />}
+            {getLinksClickQuery.data || '-'}
+            {/* Si on refetch les données en arrière plan, on affiche un spinner */}
+            {getLinksClickQuery.isFetching && <Spinner ml="2" size="xs" />}
+            {/* Si une erreur survient on affiche un warning */}
+            {!getLinksClickQuery.isFetching && getLinksClickQuery.isError && (
+              <Tooltip
+                hasArrow
+                label="Une erreur est survenue lors de la récupération du nombre de clicks. Le quota a peut-être été atteint."
+              >
+                <Icon icon={FiAlertTriangle} color="red.500" ml="2" />
+              </Tooltip>
+            )}
           </Text>
         )}
 
         <SimpleGrid columns={1}>
-          <Formiz connect={form} autoForm>
-            <FieldTextarea
-              textareaProps={{ minH: '52' }}
-              label="Contenu du spammeur"
-              name="emailContext"
-              required="Le contenu du spammeur est requis"
-              mb="4"
-            />
+          <motion.div>
+            <Formiz connect={form} autoForm>
+              <FieldTextarea
+                textareaProps={{ minH: '52' }}
+                label="Contenu du spammeur"
+                name="emailContext"
+                required="Le contenu du spammeur est requis"
+                mb="4"
+              />
 
-            <FieldSelect
-              mb="4"
-              label="Sujet à promouvoir"
-              name="subjectContext"
-              required="Le sujet à promouvoir est requis"
-              options={subjects.map((subject) => ({
-                label: subject.label,
-                value: subject.label,
-              }))}
-            />
+              <FieldSelect
+                mb="4"
+                label="Sujet à promouvoir"
+                name="subjectContext"
+                required="Le sujet à promouvoir est requis"
+                options={subjects.map((subject) => ({
+                  label: subject.label,
+                  value: subject.label,
+                }))}
+              />
 
-            <FieldSelect
-              mb="4"
-              label="Ton à employer pour la réponse"
-              name="voice"
-              options={voice.map((voiceId) => ({
-                label: capitalize(voiceId),
-                value: voiceId,
-              }))}
-            />
+              <FieldSelect
+                mb="4"
+                label="Ton à employer pour la réponse"
+                name="voice"
+                options={voice.map((voiceId) => ({
+                  label: capitalize(voiceId),
+                  value: voiceId,
+                }))}
+              />
 
-            <Button
-              w="full"
-              type="submit"
-              isLoading={getTextMutation.isLoading}
-            >
-              Générer une réponse
-            </Button>
-          </Formiz>
+              <Button
+                w="full"
+                type="submit"
+                isLoading={getTextMutation.isLoading}
+              >
+                Générer une réponse
+              </Button>
+            </Formiz>
+          </motion.div>
 
           <Textarea
             mt={8}
