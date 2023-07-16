@@ -25,40 +25,43 @@ export const POST = apiMethod({
     const { data } = bodyParsed;
 
     const messages: Array<ChatCompletionRequestMessage> = [
-      // {
-      //   role: 'user',
-      //   content: `En te basant sur ce contexte que j'ai reçu par mail d'un inconnu, fait moi une réponse en français qui fait la promotion de codeurs en seine en incitant cette entreprise à sponsoriser l'évènement codeurs en seine. Voici le contexte du mail de l'inconnu: ''. Voici quelques infos sur codeurs en seine`,
-      // },
       {
         role: 'user',
-        content: `Je vais t'envoyer, dans cet ordre: un message promotionel, de recrutement, marketing que j'ai reçu, et un sujet pour lequel j'ai un intérêt particulier que je veux vendre.`,
+        content: `En te basant sur ce contexte que j'ai reçu par mail d'un inconnu, fait moi une réponse en français qui fait la promotion de ${data.subject.label}. Voici le contexte du mail de l'inconnu: ${data.context}. Voici quelques infos sur ${data.subject.label} : ${data.subjectRules}`,
       },
       {
-        role: 'user',
-        content: data.context,
-      },
-      {
-        role: 'user',
-        content: data.subject.description,
-      },
-      {
-        role: 'user',
-        content: `Rédige un mail de réponse (en reprenant l'email reçu), en vantant les mérites du sujet. La réponse doit respecter les règles suivantes: ${rules(
+        role: 'system',
+        content: `La réponse doit respecter les règles suivantes: ${rules(
           data.subject,
-          data.voice
+          data.settings.voice
         )}`,
       },
     ];
 
     console.log(messages);
 
-    const result = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages,
-    });
-
-    return NextResponse.json({
-      response: result.data.choices[0]?.message?.content,
-    });
+    try {
+      const result = await openai.createChatCompletion({
+        model: data.settings.model,
+        messages,
+      });
+      return NextResponse.json({
+        response: result.data.choices[0]?.message?.content,
+      });
+    } catch (error) {
+      return NextResponse.json(
+        {
+          response: {
+            error: {
+              message: 'Something goes wrong with openai api',
+              error,
+            },
+          },
+        },
+        {
+          status: 500,
+        }
+      );
+    }
   },
 });

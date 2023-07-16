@@ -23,7 +23,11 @@ const getLinksClickService = createQueryKeys('getLinksClickService', {
   getLinksClicks: null,
 });
 
-export const useGetText = (
+const gptModelsServiceKeys = createQueryKeys('gptModelsService', {
+  getModels: null,
+});
+
+export const useAskAI = (
   options: UseMutationOptions<GetText, unknown, GetTextOptions> = {}
 ) => {
   const getTextMutation = useMutation({
@@ -50,14 +54,21 @@ export const useGetText = (
 export const useGetLinksClicks = () => {
   return useQuery({
     queryKey: getLinksClickService.getLinksClicks.queryKey,
-    queryFn: async () => {
-      return await ofetch(`/api/jhipster-mocks${GET_LINKS_CLICK_BASE_URL}`, {
+    queryFn: () =>
+      ofetch(`/api/jhipster-mocks${GET_LINKS_CLICK_BASE_URL}`, {
         method: 'GET',
         params: {
           linkId: 'ea3a39a2bebe4add98f6b97a307a4844',
         },
         retry: 0,
-      });
-    },
+      }),
+  });
+};
+
+export const useGetGptModels = () => {
+  return useQuery({
+    queryKey: gptModelsServiceKeys.getModels.queryKey,
+    queryFn: () => ofetch(`/api/jhipster-mocks/gpt/models`),
+    retry: 0,
   });
 };

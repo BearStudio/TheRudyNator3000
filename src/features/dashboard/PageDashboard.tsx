@@ -2,31 +2,30 @@ import React, { useState } from 'react';
 
 import {
   Button,
-  Flex,
-  Heading,
-  Image,
+  FormControl,
+  FormLabel,
   SimpleGrid,
-  SkeletonText,
-  Spinner,
   Stack,
+  Switch,
   Text,
   Textarea,
-  Tooltip,
   useClipboard,
 } from '@chakra-ui/react';
 import { Formiz, useForm } from '@formiz/core';
 import { motion } from 'framer-motion';
-import { capitalize } from 'lodash';
-import { FiAlertTriangle } from 'react-icons/fi';
+import { FiInfo } from 'react-icons/fi';
 import useSound from 'use-sound';
 
 import { FieldSelect } from '@/components/FieldSelect';
 import { FieldTextarea } from '@/components/FieldTextarea';
 import { Icon } from '@/components/Icons';
-import { Page, PageContainer, PageContent } from '@/components/Page';
+import { Page, PageContent } from '@/components/Page';
+import { AdvancedSettings } from '@/features/dashboard/AdvancedSettings';
+import { Header } from '@/features/dashboard/Header';
+import { Stats } from '@/features/dashboard/Stats';
 import { Subject, subjects } from '@/features/dashboard/data';
 import { voice } from '@/features/dashboard/schema';
-import { useGetLinksClicks, useGetText } from '@/features/dashboard/service';
+import { useAskAI } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
   const [message, setResponse] = useState<string>();
@@ -34,92 +33,67 @@ export default function PageDashboard() {
   const [playWaitingMusic, { stop: stopWaitingMusic }] = useSound('/wait.mp3');
   const [playDingSFX] = useSound('/ding.mp3');
 
-  const getTextMutation = useGetText({
+  const getTextMutation = useAskAI({
     onSuccess(res) {
       // TODO: ajout toast texte copié avec succès
       clipboard.setValue(res.response);
+      clipboard.onCopy();
       setResponse(res.response);
     },
   });
 
-  const getLinksClickQuery = useGetLinksClicks();
-
   const form = useForm({
     id: 'get-text',
-    onValidSubmit(values) {
+    onValidSubmit(values: TODO) {
       playWaitingMusic();
 
       setResponse('');
 
       getTextMutation
         .mutateAsync({
+          ...values,
           context: values.emailContext,
           subject: subjects?.find(
             (subject) => subject.label === values.subjectContext
           ) as Subject,
-          voice: values.voice,
         })
-        .then(() => {
+        .finally(() => {
           stopWaitingMusic();
           playDingSFX();
         });
     },
     initialValues: {
-      emailContext: ``,
+      emailContext: `Bonjour Monsieur Baer,
+Le CIR 2022 est terminé mais nous nous mobilisons dès aujourd'hui avec nos clients pour le CIR 2023.
+Bearstudio est peut-être confrontée en ce moment même à un contrôle du CIR. Si le sujet n'a pas été piloté de manière continue avec un référent interne ou un partenaire leader sur le sujet, vos équipes et vous-mêmes doivent se mobiliser dans l'urgence pour limiter le risque.
+Notre expérience depuis 2006 nous confirme que la sécurisation et l'optimisation du CIR est le fruit d'une démarche continue et non pas l'affaire de quelques jours dans l'année.
+Je souhaitais vous partager en quelques slides notre approche qui fait notre succès auprès des entreprises de croissance (Mirakl, Qonto, Opinel, Nanobiotix,...) :
+Les types de sollicitations fiscales
+Les indispensables du dossier CIR à préparer
+Les étapes clés d'une mission CIR performante et anticipée
+Voir le document : préparer son CIR 2023
+Bonne lecture,
+Bonne journée,`,
       subjectContext: subjects[0]?.label,
-      subjectDescription: subjects[0]?.description,
-      voice: voice[0],
+      subjectRules: subjects[0]?.description,
+      settings: {
+        model: 'gpt-3.5-turbo',
+        voice: voice[0],
+      },
     },
   });
 
   return (
-    <Page>
-      <Flex bg="white" shadow="md">
-        <PageContainer>
-          <Flex my="4" alignItems="center">
-            <Image
-              src="/thumbnail.png"
-              maxH="12"
-              objectFit="contain"
-              alt="TheRudyNator3000, image d'illustration. C'est un homme en colère qui tient une lettre."
-            />
-            <Stack ml="4" spacing="1">
-              <Heading size="md">TheRudyNator3000</Heading>
-              <Text fontSize="sm" color="blackAlpha.700">
-                Une IA pour les gouverner toutes
-              </Text>
-            </Stack>
-          </Flex>
-        </PageContainer>
-      </Flex>
+    <Page containerSize="xl">
+      <Header />
       <PageContent>
-        {getLinksClickQuery.isLoading && (
-          <SkeletonText mb="4" noOfLines={1}>
-            Nombre de spammeurs ayant cliqué les liens inclus:{' '}
-          </SkeletonText>
-        )}
+        <Stats />
 
-        {!getLinksClickQuery.isLoading && (
-          <Text mb="4">
-            Nombre de spammeurs ayant cliqué les liens inclus:{' '}
-            {getLinksClickQuery.data || '-'}
-            {/* Si on refetch les données en arrière plan, on affiche un spinner */}
-            {getLinksClickQuery.isFetching && <Spinner ml="2" size="xs" />}
-            {/* Si une erreur survient on affiche un warning */}
-            {!getLinksClickQuery.isFetching && getLinksClickQuery.isError && (
-              <Tooltip
-                hasArrow
-                label="Une erreur est survenue lors de la récupération du nombre de clicks. Le quota a peut-être été atteint."
-              >
-                <Icon icon={FiAlertTriangle} color="red.500" ml="2" />
-              </Tooltip>
-            )}
-          </Text>
-        )}
-
-        <SimpleGrid columns={1}>
+        <SimpleGrid columns={{ base: 1, md: 2 }} spacing={{ base: 0, md: 8 }}>
           <motion.div>
             <Formiz connect={form} autoForm>
+              <AdvancedSettings />
+
               <FieldTextarea
                 textareaProps={{ minH: '52' }}
                 label="Contenu du spammeur"
@@ -135,7 +109,7 @@ export default function PageDashboard() {
                 required="Le sujet à promouvoir est requis"
                 onValueChange={(newValue) => {
                   form.setValues({
-                    subjectDescription: subjects.find(
+                    subjectRules: subjects.find(
                       (subject) => subject.label === newValue
                     )?.description,
                   });
@@ -149,24 +123,16 @@ export default function PageDashboard() {
               <FieldTextarea
                 textareaProps={{ minH: '52' }}
                 label="Règles"
-                name="subjectDescription"
-                required="LEs règlers sont requises"
+                name="subjectRules"
+                required="Vous devez fournir des règles au modèle"
                 mb="4"
-              />
-
-              <FieldSelect
-                mb="4"
-                label="Ton à employer pour la réponse"
-                name="voice"
-                options={voice.map((voiceId) => ({
-                  label: capitalize(voiceId),
-                  value: voiceId,
-                }))}
               />
 
               <Button
                 w="full"
                 type="submit"
+                colorScheme="brand"
+                size="lg"
                 isLoading={getTextMutation.isLoading}
               >
                 Générer une réponse
@@ -174,13 +140,21 @@ export default function PageDashboard() {
             </Formiz>
           </motion.div>
 
-          <Textarea
-            mt={8}
-            readOnly
-            value={message}
-            minHeight="72"
-            placeholder="Le message généré apparaîtra ici"
-          />
+          <Stack>
+            <Textarea
+              mt={8}
+              readOnly
+              value={message}
+              minHeight="72"
+              placeholder="Le message généré apparaîtra ici"
+            />
+            {!!message && (
+              <Text color="gray.500" fontSize="sm">
+                <Icon icon={FiInfo} mr="1" />
+                Le texte a été copié dans votre presse papier
+              </Text>
+            )}
+          </Stack>
         </SimpleGrid>
       </PageContent>
     </Page>

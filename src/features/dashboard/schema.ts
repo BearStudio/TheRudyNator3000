@@ -17,5 +17,9 @@ export const zGetTextOptions = () =>
   z.object({
     context: z.string().nonempty(),
     subject: zSubject(),
-    voice: zVoice().optional(),
+    subjectRules: z.string().nonempty(),
+    settings: z.object({
+      voice: zVoice().optional(),
+      model: z.string().nonempty(),
+    }),
   });
