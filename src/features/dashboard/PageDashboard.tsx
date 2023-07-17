@@ -1,6 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
+  Box,
   Button,
   SimpleGrid,
   Stack,
@@ -25,7 +26,6 @@ import { voice } from '@/features/dashboard/schema';
 import { useAskAI } from '@/features/dashboard/service';
 
 export default function PageDashboard() {
-  const [message, setResponse] = useState<string>();
   const clipboard = useClipboard('');
   const [playWaitingMusic, { stop: stopWaitingMusic }] = useSound('/wait.mp3');
   const [playDingSFX] = useSound('/ding.mp3');
@@ -34,8 +34,6 @@ export default function PageDashboard() {
     onSuccess(res) {
       // TODO: ajout toast texte copié avec succès
       clipboard.setValue(res.response);
-      clipboard.onCopy();
-      setResponse(res.response);
     },
   });
 
@@ -44,7 +42,7 @@ export default function PageDashboard() {
     onValidSubmit(values: TODO) {
       playWaitingMusic();
 
-      setResponse('');
+      clipboard.setValue('');
 
       getTextMutation
         .mutateAsync({
@@ -137,21 +135,26 @@ Bonne journée,`,
             </Formiz>
           </motion.div>
 
-          <Stack>
+          <Box position="relative" mt={12}>
             <Textarea
-              mt={8}
+              position="absolute"
               readOnly
-              value={message}
+              value={clipboard.value}
               minHeight="72"
               placeholder="Le message généré apparaîtra ici"
             />
-            {!!message && (
-              <Text color="gray.500" fontSize="sm">
-                <Icon icon={FiInfo} mr="1" />
-                Le texte a été copié dans votre presse papier
-              </Text>
-            )}
-          </Stack>
+            <Button
+              position="absolute"
+              top="2"
+              right="2"
+              size="sm"
+              variant="ghost"
+              onClick={clipboard.onCopy}
+              isDisabled={clipboard.hasCopied}
+            >
+              {clipboard.hasCopied ? 'Copié !' : 'Copier'}
+            </Button>
+          </Box>
         </SimpleGrid>
       </PageContent>
     </Page>
