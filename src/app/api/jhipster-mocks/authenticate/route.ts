@@ -38,7 +38,10 @@ export const POST = apiMethod({
       return undefined;
     }
 
-    const token = await jwt.sign({ id: user.id }, process.env.AUTH_SECRET);
+    const token = await jwt.sign(
+      { id: user.id },
+      process.env.AUTH_SECRET || ''
+    );
 
     if (!token) {
       return badRequestResponse();

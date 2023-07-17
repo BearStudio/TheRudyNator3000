@@ -1,9 +1,4 @@
 import {
-  Accordion,
-  AccordionButton,
-  AccordionIcon,
-  AccordionItem,
-  AccordionPanel,
   Box,
   Collapse,
   FormControl,

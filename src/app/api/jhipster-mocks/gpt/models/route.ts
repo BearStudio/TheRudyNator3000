@@ -1,12 +1,7 @@
 import { NextResponse } from 'next/server';
-import { ChatCompletionRequestMessage, Configuration, OpenAIApi } from 'openai';
+import { Configuration, OpenAIApi } from 'openai';
 
-import {
-  apiMethod,
-  badRequestResponse,
-} from '@/app/api/jhipster-mocks/_helpers/api';
-import { rules } from '@/app/api/jhipster-mocks/get-text/rules';
-import { zGetTextOptions } from '@/features/dashboard/schema';
+import { apiMethod } from '@/app/api/jhipster-mocks/_helpers/api';
 
 const configuration = new Configuration({
   apiKey: process.env.OPENAI_API_KEY,

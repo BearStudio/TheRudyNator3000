@@ -53,7 +53,7 @@ yarn start
 
 ### Used tools, references or tips for this project and the conference
 
-- dotenv.dotenv-vscode to hide env vars (usefull for meetups and streams)
+- [dotenv.dotenv-vscode](https://marketplace.visualstudio.com/items?itemName=dotenv.dotenv-vscode) to hide env vars (usefull for meetups and streams)
 - Not used here, but if you need inspiration for a README see: https://github.com/othneildrew/Best-README-Template
 - startui
 - conf startui codeurs en seine Youtube: Starter dont je suis le héros - Ivan Dalmet & Quentin Lerebours https://www.youtube.com/watch?v=5yk34hF40Ok

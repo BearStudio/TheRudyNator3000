@@ -1,7 +1,7 @@
 import jwt from 'jsonwebtoken';
 import { NextResponse } from 'next/server';
 
-import { db } from '@/app/api/jhipster-mocks/_helpers/db';
+// import { db } from '@/app/api/jhipster-mocks/_helpers/db';
 import {
   UserFormatted,
   formatUserFromDb,
@@ -143,45 +143,45 @@ export const apiMethod =
     }
 
     try {
-      const jwtDecoded = jwt.verify(token, process.env.AUTH_SECRET);
+      // const jwtDecoded = jwt.verify(token, process.env.AUTH_SECRET || '');
 
-      if (
-        !jwtDecoded ||
-        typeof jwtDecoded !== 'object' ||
-        !('id' in jwtDecoded)
-      ) {
-        return notSignedInResponse();
-      }
+      // if (
+      //   !jwtDecoded ||
+      //   typeof jwtDecoded !== 'object' ||
+      //   !('id' in jwtDecoded)
+      // ) {
+      //   return notSignedInResponse();
+      // }
 
-      const user = formatUserFromDb(
-        await db.user.findUnique({
-          where: { id: jwtDecoded.id, activated: true },
-          select: {
-            id: true,
-            login: true,
-            email: true,
-            firstName: true,
-            lastName: true,
-            authorities: true,
-            langKey: true,
-            activated: true,
-          },
-        })
-      );
+      // const user = formatUserFromDb(
+      //   await db.user.findUnique({
+      //     where: { id: jwtDecoded.id, activated: true },
+      //     select: {
+      //       id: true,
+      //       login: true,
+      //       email: true,
+      //       firstName: true,
+      //       lastName: true,
+      //       authorities: true,
+      //       langKey: true,
+      //       activated: true,
+      //     },
+      //   })
+      // );
 
-      if (!user) {
-        return notSignedInResponse();
-      }
+      // if (!user) {
+      //   return notSignedInResponse();
+      // }
 
-      if (method.admin && !user.authorities?.includes('ROLE_ADMIN')) {
-        return notAutorizedResponse();
-      }
+      // if (method.admin && !user.authorities?.includes('ROLE_ADMIN')) {
+      //   return notAutorizedResponse();
+      // }
 
       return method.handler({
         req,
         params,
         searchParams,
-        user,
+        // user,
       });
     } catch (e) {
       return notSignedInResponse();

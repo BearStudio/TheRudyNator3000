@@ -2,11 +2,8 @@ import React, { useState } from 'react';
 
 import {
   Button,
-  FormControl,
-  FormLabel,
   SimpleGrid,
   Stack,
-  Switch,
   Text,
   Textarea,
   useClipboard,
