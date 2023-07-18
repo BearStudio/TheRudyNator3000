@@ -122,6 +122,7 @@ export default function PageDashboard() {
 
           <Box position="relative" mt={12}>
             <Textarea
+              zIndex="9"
               position="absolute"
               readOnly
               value={clipboard.value}
@@ -129,6 +130,7 @@ export default function PageDashboard() {
               placeholder="Le message généré apparaîtra ici"
             />
             <Button
+              zIndex="10"
               position="absolute"
               top="2"
               right="2"
